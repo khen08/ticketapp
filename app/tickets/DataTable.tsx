@@ -17,7 +17,6 @@ interface Props {
 }
 
 const DataTable = ({ tickets }: Props) => {
-  console.log(tickets);
   return (
     <div className="w-full mt-5">
       <div className="rounded-md sm:border">
