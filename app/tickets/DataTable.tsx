@@ -11,26 +11,99 @@ import {
 import { Ticket } from "@prisma/client";
 import Link from "next/link";
 import React from "react";
+import { ArrowDown, ArrowUp } from "lucide-react";
+import { SearchParams } from "./page";
 
 interface Props {
   tickets: Ticket[];
+  searchParams: SearchParams;
 }
 
-const DataTable = ({ tickets }: Props) => {
+const DataTable = ({ tickets, searchParams }: Props) => {
+  const getNextOrder = (field: keyof Ticket) => {
+    if (searchParams.orderBy === field && searchParams.order === "asc") {
+      return "desc";
+    }
+    return "asc";
+  };
+
+  const renderSortIcon = (field: keyof Ticket) => {
+    if (searchParams.orderBy === field) {
+      return searchParams.order === "asc" ? (
+        <ArrowUp className="inline p-1" />
+      ) : (
+        <ArrowDown className="inline p-1" />
+      );
+    }
+    return null;
+  };
+
   return (
     <div className="w-full mt-5">
       <div className="rounded-md sm:border">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Title</TableHead>
               <TableHead>
-                <div className="flex justify-center">Status</div>
+                <Link
+                  href={{
+                    query: {
+                      ...searchParams,
+                      orderBy: "title",
+                      order: getNextOrder("title"),
+                    },
+                  }}
+                >
+                  Title
+                </Link>
+                {renderSortIcon("title")}
               </TableHead>
               <TableHead>
-                <div className="flex justify-center">Priority</div>
+                <div className="flex justify-center">
+                  <Link
+                    href={{
+                      query: {
+                        ...searchParams,
+                        orderBy: "status",
+                        order: getNextOrder("status"),
+                      },
+                    }}
+                  >
+                    Status
+                  </Link>
+                  {renderSortIcon("status")}
+                </div>
               </TableHead>
-              <TableHead>Created At</TableHead>
+              <TableHead>
+                <div className="flex justify-center">
+                  <Link
+                    href={{
+                      query: {
+                        ...searchParams,
+                        orderBy: "priority",
+                        order: getNextOrder("priority"),
+                      },
+                    }}
+                  >
+                    Priority
+                  </Link>
+                  {renderSortIcon("priority")}
+                </div>
+              </TableHead>
+              <TableHead>
+                <Link
+                  href={{
+                    query: {
+                      ...searchParams,
+                      orderBy: "createdAt",
+                      order: getNextOrder("createdAt"),
+                    },
+                  }}
+                >
+                  Created At
+                </Link>
+                {renderSortIcon("createdAt")}
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
