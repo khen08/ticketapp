@@ -5,6 +5,8 @@ import prisma from "@/prisma/db";
 import Pagination from "@/components/Pagination";
 import RoleFilter from "@/components/RoleFilter";
 import { User } from "@prisma/client";
+import options from "../api/auth/[...nextauth]/options";
+import { getServerSession } from "next-auth";
 
 export interface SearchParams {
   role: string;
@@ -14,6 +16,12 @@ export interface SearchParams {
 }
 
 const Users = async ({ searchParams }: { searchParams: SearchParams }) => {
+  const session = await getServerSession(options);
+
+  if (session?.user.role !== "ADMIN") {
+    return <p className="text-destructive">Admin access required.</p>;
+  }
+
   const pageSize = 5;
   const page = parseInt(searchParams.page) || 1;
 
