@@ -11,11 +11,19 @@ const ViewTicket = async ({ params }: Props) => {
     where: { id: parseInt(params.id) },
   });
 
+  const users = await prisma.user.findMany({
+    where: {
+      role: {
+        in: ["ADMIN", "TECHNICIAN"],
+      },
+    },
+  });
+
   if (!ticket) {
     return <p className="text-destructive">Ticket Not Found!</p>;
   }
 
-  return <TicketDetail ticket={ticket} />;
+  return <TicketDetail ticket={ticket} users={users} />;
 };
 
 export default ViewTicket;
