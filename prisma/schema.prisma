@@ -24,6 +24,8 @@ model Ticket {
   updatedAt        DateTime @updatedAt
   assignedToUserId Int?
   assignedToUser   User?    @relation(fields: [assignedToUserId], references: [id])
+
+  @@index([assignedToUserId])
 }
 
 enum Status {
