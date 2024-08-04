@@ -15,13 +15,6 @@ export async function PATCH(request: NextRequest, { params }: Props) {
     return NextResponse.json({ error: "Not Authenticated" }, { status: 401 });
   }
 
-  if (session.user.role !== "ADMIN") {
-    return NextResponse.json(
-      { error: "Not Authenticated as Admin" },
-      { status: 401 }
-    );
-  }
-
   const body = await request.json();
   const validation = ticketPatchSchema.safeParse(body);
 
@@ -35,6 +28,13 @@ export async function PATCH(request: NextRequest, { params }: Props) {
 
   if (!ticket) {
     return NextResponse.json({ error: "Ticket Not Found." }, { status: 400 });
+  }
+
+  if (session.user.role !== "ADMIN" && ticket.createdBy !== session.user.name) {
+    return NextResponse.json(
+      { error: "Not Authorized to Edit This Ticket" },
+      { status: 403 }
+    );
   }
 
   if (body?.assignedToUserId) {
@@ -58,19 +58,19 @@ export async function DELETE(request: NextRequest, { params }: Props) {
     return NextResponse.json({ error: "Not Authenticated" }, { status: 401 });
   }
 
-  if (session.user.role !== "ADMIN") {
-    return NextResponse.json(
-      { error: "Not Authenticated as Admin" },
-      { status: 401 }
-    );
-  }
-
   const ticket = await prisma.ticket.findUnique({
     where: { id: parseInt(params.id) },
   });
 
   if (!ticket) {
     return NextResponse.json({ error: "Ticket Not Found." }, { status: 400 });
+  }
+
+  if (session.user.role !== "ADMIN" && ticket.createdBy !== session.user.name) {
+    return NextResponse.json(
+      { error: "Not Authorized to Delete This Ticket" },
+      { status: 403 }
+    );
   }
 
   await prisma.ticket.delete({

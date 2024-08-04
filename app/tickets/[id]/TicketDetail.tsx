@@ -40,7 +40,8 @@ const TicketDetail = ({ ticket, users }: Props) => {
               hour: "numeric",
               minute: "2-digit",
               hour12: true,
-            })}
+            })}{" "}
+            <p>by: {ticket.createdBy}</p>
           </CardDescription>
         </CardHeader>
         <CardContent className="prose dark:prose-invert">

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Form, FormControl, FormField, FormItem, FormLabel } from "./ui/form";
 import { z } from "zod";
 import { ticketSchema } from "@/ValidationSchemas/ticket";
@@ -19,6 +19,7 @@ import { Button } from "./ui/button";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { Ticket } from "@prisma/client";
+import { getSession } from "next-auth/react";
 
 type TicketFormData = z.infer<typeof ticketSchema>;
 
@@ -29,21 +30,37 @@ interface Props {
 const TicketForm = ({ ticket }: Props) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [userName, setUserName] = useState("");
   const router = useRouter();
 
   const form = useForm<TicketFormData>({
     resolver: zodResolver(ticketSchema),
   });
 
+  useEffect(() => {
+    async function fetchSession() {
+      const session = await getSession();
+      if (session && session.user) {
+        setUserName(session.user.name || "");
+      }
+    }
+    fetchSession();
+  }, []);
+
   async function onSubmit(values: z.infer<typeof ticketSchema>) {
     try {
       setIsSubmitting(true);
       setError("");
 
+      const data = {
+        ...values,
+        createdBy: userName,
+      };
+
       if (ticket) {
-        await axios.patch("/api/tickets/" + ticket.id, values);
+        await axios.patch("/api/tickets/" + ticket.id, data);
       } else {
-        await axios.post("/api/tickets", values);
+        await axios.post("/api/tickets", data);
       }
 
       setIsSubmitting(false);
