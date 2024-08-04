@@ -51,3 +51,19 @@ export async function PATCH(request: NextRequest, { params }: Props) {
 
   return NextResponse.json(updateUser);
 }
+
+export async function DELETE(request: NextRequest, { params }: Props) {
+  const user = await prisma.user.findUnique({
+    where: { id: parseInt(params.id) },
+  });
+
+  if (!user) {
+    return NextResponse.json({ error: "User Not Found." }, { status: 400 });
+  }
+
+  await prisma.user.delete({
+    where: { id: user.id },
+  });
+
+  return NextResponse.json({ message: "User Deleted." });
+}

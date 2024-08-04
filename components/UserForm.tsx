@@ -14,10 +14,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import { Button } from "./ui/button";
+import { Button, buttonVariants } from "./ui/button";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { User } from "@prisma/client";
+import DeleteButton from "@/app/users/[id]/DeleteButton";
 
 type UserFormData = z.infer<typeof userSchema>;
 
@@ -32,6 +33,12 @@ const UserForm = ({ user }: Props) => {
 
   const form = useForm<UserFormData>({
     resolver: zodResolver(userSchema),
+    defaultValues: {
+      name: user?.name || "",
+      username: user?.username || "",
+      password: "",
+      role: user?.role || "USER",
+    },
   });
 
   async function onSubmit(values: z.infer<typeof userSchema>) {
@@ -43,20 +50,21 @@ const UserForm = ({ user }: Props) => {
         await axios.patch("/api/users/" + user.id, values);
       } else {
         await axios.post("/api/users", values);
+        form.reset();
       }
 
       setIsSubmitting(false);
-      router.push("/tickets");
+      router.push("/users");
       router.refresh();
     } catch (error) {
       console.log(error);
-      setError("Unknown Error Occured.");
+      setError("Unknown Error Occurred.");
       setIsSubmitting(false);
     }
   }
 
   return (
-    <div className="rounded-md border w-full p-4">
+    <div className="rounded-md border w-full p-4 mb-3">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -136,9 +144,18 @@ const UserForm = ({ user }: Props) => {
               )}
             />
           </div>
-          <Button type="submit" disabled={isSubmitting}>
-            {user ? "Update User" : "Create User"}
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              className={buttonVariants({
+                variant: "default",
+              })}
+              type="submit"
+              disabled={isSubmitting}
+            >
+              {user ? "Update User" : "Create User"}
+            </Button>
+            {user && <DeleteButton userId={user.id} />}
+          </div>
         </form>
       </Form>
       <p className="text-destructive">{error}</p>
