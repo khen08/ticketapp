@@ -25,12 +25,11 @@ const RoleFilter = () => {
     <Select
       defaultValue={searchParams.get("role") || ""}
       onValueChange={(role) => {
-        const params = new URLSearchParams(searchParams);
-        if (role === "ALL") {
-          params.delete("role");
-        } else {
-          params.set("role", role);
-        }
+        const params = new URLSearchParams();
+
+        if (role) params.append("role", role);
+
+        const query = params.size ? `?${params.toString()}` : "0";
         router.push(`?${params.toString()}`);
       }}
     >

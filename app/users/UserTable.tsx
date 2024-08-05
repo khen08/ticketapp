@@ -37,7 +37,7 @@ const UserTable = ({ users, searchParams }: Props) => {
   };
 
   return (
-    <div className="w-full mt-5">
+    <div className="w-full">
       <div className="rounded-md sm:border">
         <Table>
           <TableHeader>

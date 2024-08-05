@@ -64,7 +64,7 @@ const UserForm = ({ user }: Props) => {
   }
 
   return (
-    <div className="rounded-md border w-full p-4 mb-3">
+    <div className="rounded-md border w-full p-4">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}

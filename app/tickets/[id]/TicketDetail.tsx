@@ -53,7 +53,7 @@ const TicketDetail = ({ ticket, users, replies: initialReplies }: Props) => {
     fetchReplies();
   }, [ticket.id]);
   return (
-    <div className="lg:grid lg:grid-cols-5">
+    <div className="mt-8 lg:grid lg:grid-cols-5">
       <Card className="mx-4 mb-4 lg:col-span-full lg:mr-4">
         <CardHeader>
           <div className="flex justify-between mb-3">
@@ -106,11 +106,14 @@ const TicketDetail = ({ ticket, users, replies: initialReplies }: Props) => {
         </CardHeader>
         <CardContent className="my-2">
           {replies.map((reply) => (
-            <div key={reply.id} className="mb-10">
+            <div
+              key={reply.id}
+              className="mb-10 border-solid border-black border-y-2 px-6 py-4"
+            >
               <ReactMarkDown>{reply.content}</ReactMarkDown>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <p className="text-gray-400 flex items-center mt-5">
+              <div className="flex items-center justify-between mt-5">
+                <div className="flex items-center justify-between">
+                  <p className="text-gray-400 flex items-center justify-between">
                     by:{" "}
                     <Avatar className="mx-2">
                       <AvatarFallback className=" bg-rose-600">
@@ -119,7 +122,7 @@ const TicketDetail = ({ ticket, users, replies: initialReplies }: Props) => {
                     </Avatar>
                     {reply.user.name}
                   </p>
-                  <p className="text-sm pl-3 text-gray-500 mt-5">
+                  <p className="text-sm pl-3 text-gray-500">
                     {new Date(reply.createdAt).toLocaleDateString("en-US", {
                       year: "2-digit",
                       month: "2-digit",

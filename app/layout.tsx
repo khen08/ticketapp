@@ -25,7 +25,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <nav className="flex flex-col items-center border-b mb-5 px-5 py-3">
+          <nav className="flex flex-col items-center border-b px-5 py-3">
             <div className="max-w-6xl w-full">
               <MainNav></MainNav>
             </div>

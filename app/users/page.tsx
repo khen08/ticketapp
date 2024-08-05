@@ -49,11 +49,9 @@ const Users = async ({ searchParams }: { searchParams: SearchParams }) => {
   });
 
   return (
-    <div className="p-4 md:p-6 lg:p-8">
+    <div className="p-4 md:p-6 lg:p-8 flex flex-col gap-4">
       <UserForm />
-      <div className="flex flex-col md:flex-row gap-4 md:gap-6 mb-4">
-        <RoleFilter />
-      </div>
+      <RoleFilter />
       <UserTable users={users} searchParams={searchParams} />
       <Pagination
         itemCount={userCount}
