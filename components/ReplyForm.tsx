@@ -14,16 +14,18 @@ type ReplyFormData = z.infer<typeof replySchema>;
 
 interface Props {
   ticketId: number;
+  reply?: ReplyFormData;
   onReplySubmitted: () => void;
 }
 
-const ReplyForm = ({ ticketId, onReplySubmitted }: Props) => {
+const ReplyForm = ({ ticketId, reply, onReplySubmitted }: Props) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [userName, setUserName] = useState("");
 
   const form = useForm<ReplyFormData>({
     resolver: zodResolver(replySchema),
+    defaultValues: reply ? { content: reply.content } : {},
   });
 
   useEffect(() => {
@@ -59,7 +61,7 @@ const ReplyForm = ({ ticketId, onReplySubmitted }: Props) => {
   }
 
   return (
-    <div className="rounded-md border w-full p-4">
+    <div className="rounded-md border w-full p-4 my-0">
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 w-full">
         <Controller
           name="content"

@@ -40,12 +40,14 @@ enum Priority {
 }
 
 model User {
-  id              Int      @id @default(autoincrement())
+  id              Int       @id @default(autoincrement())
   name            String
-  username        String   @unique
+  username        String    @unique
   password        String
-  role            Role     @default(USER)
-  assignedTickets Ticket[] @relation("AssignedTickets")
+  failedAttempts  Int       @default(0)
+  lockoutUntil    DateTime?
+  role            Role      @default(USER)
+  assignedTickets Ticket[]  @relation("AssignedTickets")
   replies         Reply[]
 
   @@index([username])
@@ -64,7 +66,7 @@ model Reply {
   ticketId  Int
   userId    Int
 
-  ticket Ticket @relation(fields: [ticketId], references: [id])
+  ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
   user   User   @relation(fields: [userId], references: [id])
 
   @@index([userId])

@@ -30,7 +30,7 @@ interface Props {
 const TicketForm = ({ ticket }: Props) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
-  const [userName, setUserName] = useState("");
+  const [name, setName] = useState("");
   const router = useRouter();
 
   const form = useForm<TicketFormData>({
@@ -41,7 +41,7 @@ const TicketForm = ({ ticket }: Props) => {
     async function fetchSession() {
       const session = await getSession();
       if (session && session.user) {
-        setUserName(session.user.name || "");
+        setName(session.user.name || "");
       }
     }
     fetchSession();
@@ -54,21 +54,24 @@ const TicketForm = ({ ticket }: Props) => {
 
       const data = {
         ...values,
-        createdBy: userName,
+        createdBy: name,
       };
-
+      console.log(data);
       if (ticket) {
         await axios.patch("/api/tickets/" + ticket.id, data);
-      } else {
-        await axios.post("/api/tickets", data);
-      }
 
+        router.push(`/tickets/${ticket.id}`);
+      } else {
+        const response = await axios.post("/api/tickets", data);
+
+        router.push(`/tickets`);
+      }
+      console.log(data);
       setIsSubmitting(false);
-      router.push("/tickets");
       router.refresh();
     } catch (error) {
       console.log(error);
-      setError("Unknown Error Occured.");
+      setError("Unknown Error Occurred.");
       setIsSubmitting(false);
     }
   }

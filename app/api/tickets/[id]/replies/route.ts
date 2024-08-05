@@ -10,8 +10,6 @@ interface Props {
 export async function POST(request: NextRequest, { params }: Props) {
   const session = await getServerSession(options);
 
-  console.log("Session:", session);
-
   if (!session || !session.user || !session.user.id) {
     return NextResponse.json({ error: "Not Authenticated" }, { status: 401 });
   }
@@ -19,13 +17,9 @@ export async function POST(request: NextRequest, { params }: Props) {
   const body = await request.json();
   const { content } = body;
 
-  console.log("Body:", body);
-
   if (!content) {
     return NextResponse.json({ error: "Content is required" }, { status: 400 });
   }
-
-  console.log("Content:", content);
 
   try {
     const newReply = await prisma.reply.create({
@@ -65,6 +59,46 @@ export async function GET(request: NextRequest, { params }: Props) {
     console.error("Error fetching replies:", error);
     return NextResponse.json(
       { error: "Error fetching replies" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(request: NextRequest, { params }: Props) {
+  const { ticketId, replyId } = await request.json();
+
+  if (!ticketId || !replyId) {
+    return NextResponse.json(
+      { error: "Missing replyId parameter" },
+      { status: 400 }
+    );
+  }
+
+  try {
+    const reply = await prisma.reply.findUnique({
+      where: {
+        id: parseInt(replyId, 10),
+      },
+    });
+
+    if (!reply) {
+      return NextResponse.json({ error: "Reply not found" }, { status: 404 });
+    }
+
+    await prisma.reply.delete({
+      where: {
+        id: parseInt(replyId, 10),
+      },
+    });
+
+    return NextResponse.json(
+      { message: "Reply deleted successfully" },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Error deleting reply:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
       { status: 500 }
     );
   }

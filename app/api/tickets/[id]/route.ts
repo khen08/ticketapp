@@ -73,9 +73,19 @@ export async function DELETE(request: NextRequest, { params }: Props) {
     );
   }
 
-  await prisma.ticket.delete({
-    where: { id: ticket.id },
-  });
+  try {
+    await prisma.ticket.delete({
+      where: { id: ticket.id },
+    });
 
-  return NextResponse.json({ message: "Ticket Deleted." });
+    return NextResponse.json({
+      message: "Ticket deleted.",
+    });
+  } catch (error) {
+    console.error("Error deleting ticket and replies:", error);
+    return NextResponse.json(
+      { error: "Error deleting ticket and replies" },
+      { status: 500 }
+    );
+  }
 }

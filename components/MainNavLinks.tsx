@@ -12,21 +12,28 @@ const MainNavLinks = ({ role }: { role?: string }) => {
 
   const currentPath = usePathname();
 
+  const handleClick =
+    (href: string) => (event: React.MouseEvent<HTMLAnchorElement>) => {
+      event.preventDefault();
+      window.location.href = href;
+    };
+
   return (
     <div className="flex items-center gap-2">
       {links
         .filter((link) => !link.adminOnly || role === "ADMIN")
         .map((link) => (
-          <Link
+          <a
             href={link.href}
+            onClick={handleClick(link.href)}
             className={`navbar-link ${
-              currentPath == link.href &&
+              currentPath === link.href &&
               "cursor-default text-primary/90 hover:text-primary/60"
             }`}
             key={link.label}
           >
             {link.label}
-          </Link>
+          </a>
         ))}
     </div>
   );

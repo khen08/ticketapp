@@ -11,13 +11,13 @@ const MainNav = async () => {
   return (
     <div className="flex justify-between">
       <div className="flex items-center gap-2">
-        <MainNavLinks role={session?.user.role} />
+        <MainNavLinks role={session?.user?.role} />
       </div>
       <div className="flex items-center gap-2">
         {session ? (
-          <Link href="/api/auth/signout?callbackUrl=/">Logout</Link>
+          <Link href="/auth/signout">Logout</Link>
         ) : (
-          <Link href="/api/auth/signin">Login</Link>
+          <Link href="/auth/signin">Login</Link>
         )}
         <ToggleMode />
       </div>

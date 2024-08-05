@@ -18,7 +18,8 @@ import DeleteButton from "./DeleteButton";
 import AssignTicket from "@/components/AssignTicket";
 import axios from "axios";
 import dynamic from "next/dynamic";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import DeleteReply from "./DeleteReply";
 
 interface Props {
   ticket: Ticket;
@@ -33,6 +34,7 @@ const ReplyForm = dynamic(() => import("@/components/ReplyForm"), {
 const TicketDetail = ({ ticket, users, replies: initialReplies }: Props) => {
   const [replies, setReplies] =
     useState<(Reply & { user: { name: string } })[]>(initialReplies);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
 
   const fetchReplies = async () => {
     try {
@@ -43,13 +45,16 @@ const TicketDetail = ({ ticket, users, replies: initialReplies }: Props) => {
     }
   };
 
+  const handleReplyDeleted = () => {
+    fetchReplies();
+  };
+
   useEffect(() => {
     fetchReplies();
   }, [ticket.id]);
-
   return (
-    <div className="lg:grid lg:grid-cols-4">
-      <Card className="mx-4 mb-4 lg:col-span-3 lg:mr-4">
+    <div className="lg:grid lg:grid-cols-5">
+      <Card className="mx-4 mb-4 lg:col-span-full lg:mr-4">
         <CardHeader>
           <div className="flex justify-between mb-3">
             <TicketStatusBadge status={ticket.status} />
@@ -57,7 +62,7 @@ const TicketDetail = ({ ticket, users, replies: initialReplies }: Props) => {
           </div>
           <CardTitle>{ticket.title}</CardTitle>
           <CardDescription>
-            Created:{" "}
+            Created by: {ticket.createdBy} |{" "}
             {ticket.createdAt.toLocaleDateString("en-US", {
               year: "2-digit",
               month: "2-digit",
@@ -66,10 +71,9 @@ const TicketDetail = ({ ticket, users, replies: initialReplies }: Props) => {
               minute: "2-digit",
               hour12: true,
             })}{" "}
-            <span>by: {ticket.createdBy}</span>
           </CardDescription>
         </CardHeader>
-        <CardContent className="prose dark:prose-invert">
+        <CardContent className="mb-4">
           <ReactMarkDown>{ticket.description}</ReactMarkDown>
         </CardContent>
         <CardFooter>
@@ -84,7 +88,7 @@ const TicketDetail = ({ ticket, users, replies: initialReplies }: Props) => {
           })}
         </CardFooter>
       </Card>
-      <div className="mx-4 flex lg:flex-col lg:mx-0 gap-2">
+      <div className="pl-4 mb-3 mx-4 flex lg:flex-col lg:mx-0 gap-2">
         <AssignTicket ticket={ticket} users={users} />
         <Link
           href={`/tickets/edit/${ticket.id}`}
@@ -96,32 +100,45 @@ const TicketDetail = ({ ticket, users, replies: initialReplies }: Props) => {
         </Link>
         <DeleteButton ticketId={ticket.id} />
       </div>
-      <Card className="mx-4 mb-4 lg:col-span-3 lg:mr-4">
+      <Card className="mx-4 mb-4 lg:col-span-4 lg:mr-4">
         <CardHeader>
           <CardTitle>Replies</CardTitle>
         </CardHeader>
         <CardContent className="my-2">
           {replies.map((reply) => (
-            <div key={reply.id} className="prose dark:prose-invert mb-4">
+            <div key={reply.id} className="mb-10">
               <ReactMarkDown>{reply.content}</ReactMarkDown>
-              <div className="flex items-center">
-                <p className="text-gray-400 flex items-center">
-                  by:{" "}
-                  <Avatar className="mx-2">
-                    <AvatarFallback>{reply.user.name.charAt(0)}</AvatarFallback>
-                  </Avatar>
-                  {reply.user.name}
-                </p>
-                <p className="text-sm pl-3 text-gray-500">
-                  {new Date(reply.createdAt).toLocaleDateString("en-US", {
-                    year: "2-digit",
-                    month: "2-digit",
-                    day: "2-digit",
-                    hour: "numeric",
-                    minute: "2-digit",
-                    hour12: true,
-                  })}
-                </p>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <p className="text-gray-400 flex items-center mt-5">
+                    by:{" "}
+                    <Avatar className="mx-2">
+                      <AvatarFallback>
+                        {reply.user.name.charAt(0)}
+                      </AvatarFallback>
+                    </Avatar>
+                    {reply.user.name}
+                  </p>
+                  <p className="text-sm pl-3 text-gray-500 mt-5">
+                    {new Date(reply.createdAt).toLocaleDateString("en-US", {
+                      year: "2-digit",
+                      month: "2-digit",
+                      day: "2-digit",
+                      hour: "numeric",
+                      minute: "2-digit",
+                      hour12: true,
+                    })}
+                  </p>
+                </div>
+                <div className="ml-auto">
+                  <DeleteReply
+                    ticketId={ticket.id}
+                    replyId={reply.id}
+                    userId={currentUser ? currentUser.id : 0}
+                    userRole={currentUser ? currentUser.role : ""}
+                    onReplyDeleted={handleReplyDeleted}
+                  />
+                </div>
               </div>
             </div>
           ))}
