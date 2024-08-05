@@ -45,12 +45,14 @@ const options: NextAuthOptions = {
     async jwt({ token, account, user }) {
       if (account) {
         token.role = user.role;
+        token.id = user.id; // Add user id to token
       }
       return token;
     },
     session({ session, token }) {
       if (session.user) {
         session.user.role = token.role || "USER";
+        session.user.id = token.id; // Add user id to session
       }
       return session;
     },

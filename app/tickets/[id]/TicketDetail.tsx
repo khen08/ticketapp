@@ -1,5 +1,6 @@
-import { Ticket, User } from "@prisma/client";
-import React from "react";
+"use client";
+import { Ticket, User, Reply } from "@prisma/client";
+import React, { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -15,13 +16,37 @@ import { buttonVariants } from "@/components/ui/button";
 import ReactMarkDown from "react-markdown";
 import DeleteButton from "./DeleteButton";
 import AssignTicket from "@/components/AssignTicket";
+import axios from "axios";
+import dynamic from "next/dynamic";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface Props {
   ticket: Ticket;
   users: User[];
+  replies: (Reply & { user: { name: string } })[];
 }
 
-const TicketDetail = ({ ticket, users }: Props) => {
+const ReplyForm = dynamic(() => import("@/components/ReplyForm"), {
+  ssr: false,
+});
+
+const TicketDetail = ({ ticket, users, replies: initialReplies }: Props) => {
+  const [replies, setReplies] =
+    useState<(Reply & { user: { name: string } })[]>(initialReplies);
+
+  const fetchReplies = async () => {
+    try {
+      const response = await axios.get(`/api/tickets/${ticket.id}/replies`);
+      setReplies(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchReplies();
+  }, [ticket.id]);
+
   return (
     <div className="lg:grid lg:grid-cols-4">
       <Card className="mx-4 mb-4 lg:col-span-3 lg:mr-4">
@@ -41,7 +66,7 @@ const TicketDetail = ({ ticket, users }: Props) => {
               minute: "2-digit",
               hour12: true,
             })}{" "}
-            <p>by: {ticket.createdBy}</p>
+            <span>by: {ticket.createdBy}</span>
           </CardDescription>
         </CardHeader>
         <CardContent className="prose dark:prose-invert">
@@ -71,6 +96,40 @@ const TicketDetail = ({ ticket, users }: Props) => {
         </Link>
         <DeleteButton ticketId={ticket.id} />
       </div>
+      <Card className="mx-4 mb-4 lg:col-span-3 lg:mr-4">
+        <CardHeader>
+          <CardTitle>Replies</CardTitle>
+        </CardHeader>
+        <CardContent className="my-2">
+          {replies.map((reply) => (
+            <div key={reply.id} className="prose dark:prose-invert mb-4">
+              <ReactMarkDown>{reply.content}</ReactMarkDown>
+              <div className="flex items-center">
+                <p className="text-gray-400 flex items-center">
+                  by:{" "}
+                  <Avatar className="mx-2">
+                    <AvatarFallback>{reply.user.name.charAt(0)}</AvatarFallback>
+                  </Avatar>
+                  {reply.user.name}
+                </p>
+                <p className="text-sm pl-3 text-gray-500">
+                  {new Date(reply.createdAt).toLocaleDateString("en-US", {
+                    year: "2-digit",
+                    month: "2-digit",
+                    day: "2-digit",
+                    hour: "numeric",
+                    minute: "2-digit",
+                    hour12: true,
+                  })}
+                </p>
+              </div>
+            </div>
+          ))}
+        </CardContent>
+        <CardFooter>
+          <ReplyForm ticketId={ticket.id} onReplySubmitted={fetchReplies} />
+        </CardFooter>
+      </Card>
     </div>
   );
 };
