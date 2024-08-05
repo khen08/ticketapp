@@ -113,7 +113,7 @@ const TicketDetail = ({ ticket, users, replies: initialReplies }: Props) => {
                   <p className="text-gray-400 flex items-center mt-5">
                     by:{" "}
                     <Avatar className="mx-2">
-                      <AvatarFallback>
+                      <AvatarFallback className=" bg-rose-600">
                         {reply.user.name.charAt(0)}
                       </AvatarFallback>
                     </Avatar>

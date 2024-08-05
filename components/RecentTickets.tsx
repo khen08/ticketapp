@@ -1,10 +1,4 @@
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "./ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "./ui/card";
 import { Prisma, Ticket } from "@prisma/client";
 import React from "react";
 import TicketStatusBadge from "./TicketStatusBadge";
@@ -37,7 +31,8 @@ const RecentTickets = ({ tickets }: Props) => {
                     <Link href={`tickets/${ticket.id}`}>
                       <p className="font-bold">{ticket.title}</p>
                       <p>
-                        {ticket.createdAt.toLocaleDateString("en-US", {
+                        Last Update:{" "}
+                        {ticket.updatedAt.toLocaleDateString("en-US", {
                           year: "2-digit",
                           month: "2-digit",
                           day: "2-digit",

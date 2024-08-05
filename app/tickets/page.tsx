@@ -54,8 +54,8 @@ const Tickets = async ({ searchParams }: { searchParams: SearchParams }) => {
   });
 
   return (
-    <div>
-      <div className="flex gap-2">
+    <div className="p-4 md:p-6 lg:p-8">
+      <div className="flex flex-col md:flex-row gap-4 md:gap-6 mb-4">
         {session && (
           <Link
             href="/tickets/new"
