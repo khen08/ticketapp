@@ -41,11 +41,11 @@ export async function PATCH(request: NextRequest, { params }: Props) {
     body.assignedToUserId = parseInt(body.assignedToUserId);
   }
 
+  const { createdBy, ...updateData } = body;
+
   const updateTicket = await prisma.ticket.update({
     where: { id: ticket.id },
-    data: {
-      ...body,
-    },
+    data: updateData,
   });
 
   return NextResponse.json(updateTicket);
