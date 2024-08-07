@@ -1,6 +1,6 @@
 import React from "react";
 import prisma from "@/prisma/db";
-import TicketDetail from "./TicketDetail";
+import TicketDetail from "./TicketDetail"; // Adjust the path as necessary
 
 interface Props {
   params: { id: string };
@@ -25,6 +25,7 @@ const ViewTicket = async ({ params }: Props) => {
     include: {
       user: {
         select: {
+          id: true,
           name: true,
         },
       },
