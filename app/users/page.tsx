@@ -16,11 +16,11 @@ export interface SearchParams {
 }
 
 const Users = async ({ searchParams }: { searchParams: SearchParams }) => {
-  const session = await getServerSession(options);
+  // const session = await getServerSession(options);
 
-  if (session?.user.role !== "ADMIN") {
-    return <p className="text-destructive">Admin access required.</p>;
-  }
+  // if (session?.user.role !== "ADMIN") {
+  //   return <p className="text-destructive">Admin access required.</p>;
+  // }
 
   const pageSize = 5;
   const page = parseInt(searchParams.page) || 1;
