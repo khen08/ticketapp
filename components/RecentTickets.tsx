@@ -1,9 +1,11 @@
+"use client";
 import { Card, CardHeader, CardTitle, CardContent } from "./ui/card";
 import { Prisma, Ticket } from "@prisma/client";
 import React from "react";
 import TicketStatusBadge from "./TicketStatusBadge";
 import Link from "next/link";
 import TicketPriority from "./TicketPriority";
+import { motion } from "framer-motion";
 
 type TicketWithUser = Prisma.TicketGetPayload<{
   include: { assignedToUser: true };
@@ -15,15 +17,27 @@ interface Props {
 
 const RecentTickets = ({ tickets }: Props) => {
   return (
-    <Card className="col-span-3">
-      <CardHeader>
-        <CardTitle>Recently Updated</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-8">
-          {tickets
-            ? tickets.map((ticket) => (
-                <div className="flex items-center" key={ticket.id}>
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95, y: 20 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.2 }}
+      className="col-span-3"
+    >
+      <Card>
+        <CardHeader>
+          <CardTitle>Recently Updated</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-8">
+            {tickets &&
+              tickets.map((ticket, index) => (
+                <motion.div
+                  key={ticket.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: index * 0.1 }}
+                  className="flex items-center"
+                >
                   <div className="w-[80px] text-center">
                     <TicketStatusBadge status={ticket.status} />
                   </div>
@@ -51,12 +65,12 @@ const RecentTickets = ({ tickets }: Props) => {
                   <div className="ml-auto font-medium">
                     <TicketPriority priority={ticket.priority} />
                   </div>
-                </div>
-              ))
-            : null}
-        </div>
-      </CardContent>
-    </Card>
+                </motion.div>
+              ))}
+          </div>
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 };
 
