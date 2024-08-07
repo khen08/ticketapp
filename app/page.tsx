@@ -34,16 +34,16 @@ const Dashboard = async () => {
   });
 
   return (
-    <div>
-      <div className="mt-8 grid gap-5 lg:grid-cols-2 md:grid-cols-1 px-2">
-        <div>
+    <div className="px-2">
+      <div className="mt-8 grid gap-5 lg:grid-cols-2 md:grid-cols-1">
+        <div className="flex flex-col h-full gap-5">
           <RecentTickets tickets={tickets} />
         </div>
-        <div className="flex flex-col gap-5">
-          <div>
+        <div className="flex flex-col gap-5 h-full">
+          <div className="flex-grow">
             <DashboardChart data={data} />
           </div>
-          <div>
+          <div className="flex-grow">
             <TopCarousel />
           </div>
         </div>
