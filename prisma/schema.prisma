@@ -67,7 +67,7 @@ model Reply {
   userId    Int
 
   ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
-  user   User   @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([ticketId])

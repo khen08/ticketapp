@@ -53,7 +53,7 @@ const DeleteReply: React.FC<DeleteReplyProps> = ({
           })}
           disabled={isDeleting}
         >
-          <Trash2 />
+          <Trash2 className="w-5 h-5" />
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>

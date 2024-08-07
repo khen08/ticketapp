@@ -19,7 +19,7 @@ const Users = async ({ searchParams }: { searchParams: SearchParams }) => {
   const session = await getServerSession(options);
 
   if (session?.user.role !== "ADMIN") {
-    return <p className="text-destructive">Admin access required.</p>;
+    return <p className="pt-4 text-destructive">Admin access required.</p>;
   }
 
   const pageSize = 5;

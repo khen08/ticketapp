@@ -20,11 +20,12 @@ import axios from "axios";
 import dynamic from "next/dynamic";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import DeleteReply from "./DeleteReply";
+import { getSession } from "next-auth/react";
 
 interface Props {
   ticket: Ticket;
   users: User[];
-  replies: (Reply & { user: { name: string } })[];
+  replies: (Reply & { user: { id: number; name: string } })[];
 }
 
 const ReplyForm = dynamic(() => import("@/components/ReplyForm"), {
@@ -33,7 +34,9 @@ const ReplyForm = dynamic(() => import("@/components/ReplyForm"), {
 
 const TicketDetail = ({ ticket, users, replies: initialReplies }: Props) => {
   const [replies, setReplies] =
-    useState<(Reply & { user: { name: string } })[]>(initialReplies);
+    useState<(Reply & { user: { id: number; name: string } })[]>(
+      initialReplies
+    );
   const [currentUser, setCurrentUser] = useState<User | null>(null);
 
   const fetchReplies = async () => {
@@ -45,13 +48,31 @@ const TicketDetail = ({ ticket, users, replies: initialReplies }: Props) => {
     }
   };
 
+  const fetchCurrentUser = async () => {
+    try {
+      const session = await getSession();
+      if (session && session.user) {
+        setCurrentUser(session.user as User);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const handleReplyDeleted = () => {
     fetchReplies();
   };
 
   useEffect(() => {
     fetchReplies();
+    fetchCurrentUser();
   }, [ticket.id]);
+
+  useEffect(() => {
+    console.log("Current User:", currentUser);
+    console.log("Replies:", replies);
+  }, [currentUser, replies]);
+
   return (
     <div className="mt-8 lg:grid lg:grid-cols-5">
       <Card className="mx-4 mb-4 lg:col-span-full lg:mr-4">
@@ -63,7 +84,7 @@ const TicketDetail = ({ ticket, users, replies: initialReplies }: Props) => {
           <CardTitle>{ticket.title}</CardTitle>
           <CardDescription>
             Created by: {ticket.createdBy} |{" "}
-            {ticket.createdAt.toLocaleDateString("en-US", {
+            {new Date(ticket.createdAt).toLocaleDateString("en-US", {
               year: "2-digit",
               month: "2-digit",
               day: "2-digit",
@@ -78,7 +99,7 @@ const TicketDetail = ({ ticket, users, replies: initialReplies }: Props) => {
         </CardContent>
         <CardFooter className="text-sm">
           Updated:{" "}
-          {ticket.updatedAt.toLocaleDateString("en-US", {
+          {new Date(ticket.updatedAt).toLocaleDateString("en-US", {
             year: "2-digit",
             month: "2-digit",
             day: "2-digit",
@@ -134,20 +155,28 @@ const TicketDetail = ({ ticket, users, replies: initialReplies }: Props) => {
                   </p>
                 </div>
                 <div className="ml-auto">
-                  <DeleteReply
-                    ticketId={ticket.id}
-                    replyId={reply.id}
-                    userId={currentUser ? currentUser.id : 0}
-                    userRole={currentUser ? currentUser.role : ""}
-                    onReplyDeleted={handleReplyDeleted}
-                  />
+                  {currentUser &&
+                    (currentUser.id === reply.userId ||
+                      currentUser.role === "ADMIN") && (
+                      <DeleteReply
+                        ticketId={ticket.id}
+                        replyId={reply.id}
+                        userId={currentUser.id}
+                        userRole={currentUser.role}
+                        onReplyDeleted={handleReplyDeleted}
+                      />
+                    )}
                 </div>
               </div>
             </div>
           ))}
         </CardContent>
         <CardFooter>
-          <ReplyForm ticketId={ticket.id} onReplySubmitted={fetchReplies} />
+          {currentUser ? (
+            <ReplyForm ticketId={ticket.id} onReplySubmitted={fetchReplies} />
+          ) : (
+            <p className="text-gray-500">Log in to add a reply.</p>
+          )}
         </CardFooter>
       </Card>
     </div>

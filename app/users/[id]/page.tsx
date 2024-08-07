@@ -12,7 +12,7 @@ const EditUser = async ({ params }: Props) => {
   const session = await getServerSession(options);
 
   if (session?.user.role !== "ADMIN") {
-    return <p className="text-destructive">Admin access required.</p>;
+    return <p className="pt-4 text-destructive">Admin access required.</p>;
   }
 
   const user = await prisma.user.findUnique({
@@ -20,7 +20,7 @@ const EditUser = async ({ params }: Props) => {
   });
 
   if (!user) {
-    return <p className="text-destructive">User Not Found.</p>;
+    return <p className="pt-4 text-destructive">User Not Found.</p>;
   }
 
   user.password = "";
