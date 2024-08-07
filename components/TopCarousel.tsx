@@ -71,7 +71,7 @@ const TopCarousel = () => {
                       <div className="flex items-center w-full justify-center mt-2 font-bold">
                         {technician.name}
                       </div>
-                      <p className="flex items-center justify-center mt-2">
+                      <p className="flex items-center justify-center mt-1">
                         Tickets Assigned: {technician.ticketCount}
                       </p>
                     </motion.div>
