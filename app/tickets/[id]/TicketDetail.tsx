@@ -108,7 +108,7 @@ const TicketDetail = ({ ticket, users, replies: initialReplies }: Props) => {
           {replies.map((reply) => (
             <div
               key={reply.id}
-              className="mb-10 border-solid border-black border-y-2 px-6 py-4"
+              className="mb-10 border-solid border-slate-600 border-y-2 px-6 py-4"
             >
               <ReactMarkDown>{reply.content}</ReactMarkDown>
               <div className="flex items-center justify-between mt-5">
