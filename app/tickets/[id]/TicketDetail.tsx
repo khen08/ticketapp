@@ -76,7 +76,7 @@ const TicketDetail = ({ ticket, users, replies: initialReplies }: Props) => {
         <CardContent className="mb-4">
           <ReactMarkDown>{ticket.description}</ReactMarkDown>
         </CardContent>
-        <CardFooter>
+        <CardFooter className="text-sm">
           Updated:{" "}
           {ticket.updatedAt.toLocaleDateString("en-US", {
             year: "2-digit",
@@ -108,7 +108,7 @@ const TicketDetail = ({ ticket, users, replies: initialReplies }: Props) => {
           {replies.map((reply) => (
             <div
               key={reply.id}
-              className="mb-10 border-solid border-slate-600 border-y-2 px-6 py-4"
+              className="mb-10 border-solid border-zinc-500 border-l-2 px-6 py-4"
             >
               <ReactMarkDown>{reply.content}</ReactMarkDown>
               <div className="flex items-center justify-between mt-5">
